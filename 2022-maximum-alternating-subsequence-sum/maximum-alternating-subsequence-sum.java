@@ -1,39 +1,21 @@
 class Solution {
-    int n;
-    long[][] t;
-
-    long solve(int idx, int[] nums, boolean isEven) {
-        if (idx >= n) {
-            return 0;
-        }
-
-        int state = isEven ? 1 : 0;
-
-        if (t[idx][state] != -1) {
-            return t[idx][state];
-        }
-
-        long skip = solve(idx + 1, nums, isEven);
-
-        long val = nums[idx];
-
-        if (!isEven) {
-            val = -val;
-        }
-
-        long take = solve(idx + 1, nums, !isEven) + val;
-
-        return t[idx][state] = Math.max(skip, take);
-    }
-
     public long maxAlternatingSum(int[] nums) {
-        n = nums.length;
-        t = new long[n][2];
+        int n = nums.length;
 
-        for (long[] row : t) {
-            Arrays.fill(row, -1);
+        long[][] t = new long[n + 1][2];
+
+        for (int i = 1; i <= n; i++) {
+            t[i][0] = Math.max(
+                t[i - 1][1] - nums[i - 1],
+                t[i - 1][0]
+            );
+
+            t[i][1] = Math.max(
+                t[i - 1][0] + nums[i - 1],
+                t[i - 1][1]
+            );
         }
 
-        return solve(0, nums, true);
+        return Math.max(t[n][0], t[n][1]);
     }
 }

@@ -1,22 +1,22 @@
 class Solution {
-    public int minimumTotal(List<List<Integer>> triangle) {
-        int n = triangle.size();
-        int[][] t = new int[n][n];
+    int minimumTotal(List<List<Integer>> triangle) {
 
-        // Copy triangle into t
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j <= i; j++) {
-                t[i][j] = triangle.get(i).get(j);
-            }
-        }
+    int height = triangle.size();
+    int[][] dp = new int[height + 1][height + 1];
 
-        // Bottom-up calculation
-        for (int row = n - 2; row >= 0; row--) {
-            for (int col = 0; col <= row; col++) {
-                t[row][col] += Math.min(t[row + 1][col], t[row + 1][col + 1]);
-            }
-        }
+    for (int level = height - 1; level >= 0; level--) {
 
-        return t[0][0];
+      for (int i = 0; i <= level; i++) {
+
+        // Add the minimum amongst 2 adjacent elements
+        // from bottom level
+        dp[level][i] = triangle.get(level).get(i)
+            + Math.min(
+                dp[level + 1][i], dp[level + 1][i + 1]);
+      }
+
     }
+
+    return dp[0][0];
+  }
 }

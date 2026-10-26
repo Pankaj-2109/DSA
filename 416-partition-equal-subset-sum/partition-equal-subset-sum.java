@@ -1,50 +1,43 @@
 class Solution {
-    int[][] t = new int[201][20001];
+    public boolean isSubsetSum(int[] arr, int sum) {
+        int n = arr.length;
 
-    boolean solve(List<Integer> nums, int i, int x) {
-        if (x == 0) {
-            return true;
+        boolean[][] t = new boolean[n + 1][sum + 1];
+
+        // Base case: sum = 0 is always possible
+        for (int i = 0; i <= n; i++) {
+            t[i][0] = true;
         }
 
-        if (i >= nums.size()) {
-            return false;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= sum; j++) {
+
+                boolean skip = t[i - 1][j];
+
+                boolean take = false;
+                if (arr[i - 1] <= j) {
+                    take = t[i - 1][j - arr[i - 1]];
+                }
+
+                t[i][j] = take || skip;
+            }
         }
 
-        if (t[i][x] != -1) {
-            return t[i][x] == 1;
-        }
-
-        boolean take = false;
-        if (nums.get(i) <= x) {
-            take = solve(nums, i + 1, x - nums.get(i));
-        }
-
-        boolean not_take = solve(nums, i + 1, x);
-
-        t[i][x] = (take || not_take) ? 1 : 0;
-        return take || not_take;
+        return t[n][sum];
     }
 
-    public boolean canPartition(int[] numsArr) {
-        List<Integer> nums = new ArrayList<>();
-        for (int num : numsArr) nums.add(num);
+    public boolean canPartition(int[] nums) {
+        int n = nums.length;
 
-        int n = nums.size();
-        int S = 0;
-        for (int num : nums) {
-            S += num;
-        }
+        int SUM = 0;
+        for (int num : nums)
+            SUM += num;
 
-        if (S % 2 != 0) {
+        if (SUM % 2 != 0)
             return false;
-        }
 
-        for (int[] row : t) {
-            Arrays.fill(row, -1);
-        }
+        int S = SUM / 2;
 
-        int x = S / 2;
-
-        return solve(nums, 0, x);
+        return isSubsetSum(nums, S);
     }
 }

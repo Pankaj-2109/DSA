@@ -3,35 +3,27 @@ class Solution {
         int n = coins.length;
         int[][] dp = new int[n + 1][amount + 1];
         
-        // Initialize dp table with -1 to mark states as uncomputed
-        for (int[] row : dp) {
-            Arrays.fill(row, -1);
+        // Base Case: If amount is 0, there is 1 way (take nothing)
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 1;
         }
         
-        return solve(0, amount, coins, dp);
-    }
-    
-    private int solve(int i, int amount, int[] coins, int[][] dp) {
-        // Base cases
-        if (amount == 0) {
-            return 1; // Found a valid combination
+        // Fill the DP table from bottom up (matching the recursive order)
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = 1; j <= amount; j++) {
+                // Choice 1: Take current coin (if j >= coins[i], stay at index i)
+                int take = 0;
+                if (j >= coins[i]) {
+                    take = dp[i][j - coins[i]];
+                }
+                
+                // Choice 2: Skip current coin (move to i + 1)
+                int skip = dp[i + 1][j];
+                
+                dp[i][j] = take + skip;
+            }
         }
-        if (amount < 0 || i == coins.length) {
-            return 0; // Invalid path or ran out of coins
-        }
         
-        // Check if already computed
-        if (dp[i][amount] != -1) {
-            return dp[i][amount];
-        }
-        
-        // Choice 1: Take the current coin (stay at index i for unlimited reuse)
-        int take = solve(i, amount - coins[i], coins, dp);
-        
-        // Choice 2: Skip the current coin (move to the next coin index i + 1)
-        int skip = solve(i + 1, amount, coins, dp);
-        
-        // Store in dp table and return
-        return dp[i][amount] = take + skip;
+        return dp[0][amount];
     }
 }

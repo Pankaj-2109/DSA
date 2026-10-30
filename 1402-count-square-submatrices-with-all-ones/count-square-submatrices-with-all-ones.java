@@ -1,7 +1,9 @@
+import java.util.Arrays;
+
 class Solution {
     int m, n;
 
-    private int solve(int i, int j, int[][] grid, int[][] t) {
+    public int solve(int i, int j, int[][] grid, int[][] dp) {
 
         if (i >= m || j >= n)
             return 0;
@@ -9,36 +11,31 @@ class Solution {
         if (grid[i][j] == 0)
             return 0;
 
-        if (t[i][j] != -1)
-            return t[i][j];
+        if (dp[i][j] != -1)
+            return dp[i][j];
 
-        // Right
-        int right = solve(i, j + 1, grid, t);
+        int right = solve(i, j + 1, grid, dp);
+        int diagonal = solve(i + 1, j + 1, grid, dp);
+        int below = solve(i + 1, j, grid, dp);
 
-        // Diagonal
-        int diagonal = solve(i + 1, j + 1, grid, t);
-
-        // Below
-        int below = solve(i + 1, j, grid, t);
-
-        return t[i][j] = 1 + Math.min(right, Math.min(diagonal, below));
+        return dp[i][j] = 1 + Math.min(right, Math.min(diagonal, below));
     }
 
     public int countSquares(int[][] grid) {
         m = grid.length;
         n = grid[0].length;
 
-        int[][] t = new int[m][n];
+        int[][] dp = new int[m][n];
 
         for (int i = 0; i < m; i++) {
-            Arrays.fill(t[i], -1);
+            Arrays.fill(dp[i], -1);
         }
 
         int result = 0;
 
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                result += solve(i, j, grid, t);
+                result += solve(i, j, grid, dp);
             }
         }
 

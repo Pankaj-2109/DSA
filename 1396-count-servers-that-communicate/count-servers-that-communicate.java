@@ -1,78 +1,40 @@
 class Solution {
-    class DSU {
-        int[] parent;
-        int[] rank;
-
-        public DSU(int n) {
-            parent = new int[n];
-            rank = new int[n];
-            for (int i = 0; i < n; i++) {
-                parent[i] = i;
-                rank[i] = 1;
-            }
-        }
-
-        public int find(int i) {
-            if (parent[i] == i)
-                return i;
-            return parent[i] = find(parent[i]);
-        }
-
-        public void union(int i, int j) {
-            int rootI = find(i);
-            int rootJ = find(j);
-            if (rootI != rootJ) {
-                if (rank[rootI] < rank[rootJ]) {
-                    parent[rootI] = rootJ;
-                    rank[rootJ] += rank[rootI];
-                } else {
-                    parent[rootJ] = rootI;
-                    rank[rootI] += rank[rootJ];
-                }
-            }
-        }
-    }
-
     public int countServers(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
 
-        DSU dsu = new DSU(m + n);
-        int[] rowCount = new int[m];
-        int[] colCount = new int[n];
+        int[] colServerCount = new int[n];
+        int[] rowAkelaServerCol = new int[m];
+        Arrays.fill(rowAkelaServerCol, -1);
 
-        // First pass: Count servers in each row and column
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 1) {
-                    rowCount[i]++;
-                    colCount[j]++;
+        int resultServers = 0;
+
+        for (int row = 0; row < m; row++) {
+            int countServersRow = 0;
+            for (int col = 0; col < n; col++) {
+                if (grid[row][col] == 1) {
+                    countServersRow++;
+                    colServerCount[col]++;
+                    rowAkelaServerCol[row] = col;
+                }
+            }
+
+            if (countServersRow > 1) {
+                resultServers += countServersRow;
+                rowAkelaServerCol[row] = -1; // no akela server in this row
+            }
+        }
+
+        // Check Akela servers in each row
+        for (int row = 0; row < m; row++) {
+            if (rowAkelaServerCol[row] != -1) {
+                int col = rowAkelaServerCol[row];
+                if (colServerCount[col] > 1) {
+                    resultServers++;
                 }
             }
         }
 
-        // Second pass: Union row and column for each server
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 1) {
-                    dsu.union(i, j + m);
-                }
-            }
-        }
-
-        int communicatingServers = 0;
-
-        // Third pass: Count servers that have a peer in their row or column
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 1) {
-                    if (rowCount[i] > 1 || colCount[j] > 1) {
-                        communicatingServers++;
-                    }
-                }
-            }
-        }
-
-        return communicatingServers;
+        return resultServers;
     }
 }

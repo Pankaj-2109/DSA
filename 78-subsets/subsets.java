@@ -1,33 +1,22 @@
-
-
 class Solution {
     public List<List<Integer>> subsets(int[] nums) {
-        return helper(new ArrayList<>(), 0, nums);
-    }
+        int n = nums.length;
 
-    private List<List<Integer>> helper(List<Integer> current, int index, int[] nums) {
-        // base case
-        if (index == nums.length) {
-            List<List<Integer>> result = new ArrayList<>();
-            result.add(new ArrayList<>(current));
-            return result;
+        List<List<Integer>> ans = new ArrayList<>();
+
+        // There are 2^n possible subsets
+        for (int i = 0; i < (1 << n); i++) {
+            List<Integer> v = new ArrayList<>();
+
+            for (int j = 0; j < n; j++) {
+                if (((1 << j) & i) != 0) {
+                    v.add(nums[j]);
+                }
+            }
+
+            ans.add(v);
         }
 
-        // recursive case
-        int num = nums[index];
-
-        // include current number
-        current.add(num);
-        List<List<Integer>> include = helper(current, index + 1, nums);
-
-        // exclude current number
-        current.remove(current.size() - 1);
-        List<List<Integer>> exclude = helper(current, index + 1, nums);
-
-        // merge results
-        include.addAll(exclude);
-        return include;
+        return ans;
     }
-
-    
 }

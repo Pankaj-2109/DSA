@@ -6,24 +6,23 @@ class Solution {
 
         boolean[] isPrime = new boolean[n];
 
-        Arrays.fill(isPrime, true);
+        for (int i = 3; i < n; i += 2) {
+            isPrime[i] = true;
+        }
 
-        isPrime[0] = false;
-        isPrime[1] = false;
+        int count = 1; // Prime number 2
 
-        for (int i = 2; i * i < n; i++) {
+        for (int i = 3; i * i < n; i += 2) {
 
             if (isPrime[i]) {
 
-                for (int j = i * i; j < n; j += i) {
+                for (int j = i * i; j < n; j += 2 * i) {
                     isPrime[j] = false;
                 }
             }
         }
 
-        int count = 0;
-
-        for (int i = 2; i < n; i++) {
+        for (int i = 3; i < n; i += 2) {
             if (isPrime[i]) {
                 count++;
             }

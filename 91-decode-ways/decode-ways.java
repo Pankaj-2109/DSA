@@ -1,22 +1,25 @@
-class Solution {
-    public int numDecodings(String s) {
-        int n = s.length();
-        int[] dp = new int[n + 1];
+public class Solution {
+    public int bottomUp1(String s, int n) {
+        int[] t = new int[n + 1];
+        ////t[i] = ways to decode string from index i to n
+        Arrays.fill(t, 0);
+        t[n] = 1;
 
-        dp[0] = 1;
-
-        for (int i = 1; i <= n; i++) {
-            if (s.charAt(i - 1) != '0') {
-                dp[i] += dp[i - 1];
-            }
-
-            if (i >= 2 &&
-                (s.charAt(i - 2) == '1' ||
-                (s.charAt(i - 2) == '2' && s.charAt(i - 1) <= '6'))) {
-                dp[i] += dp[i - 2];
+        for (int i = n - 1; i >= 0; i--) {
+            if (s.charAt(i) == '0') {
+                t[i] = 0;
+            } else {
+                t[i] = t[i + 1];
+                if (i < n - 1 && (s.charAt(i) == '1' || (s.charAt(i) == '2' && s.charAt(i + 1) < '7'))) {
+                    t[i] += t[i + 2];
+                }
             }
         }
+        return t[0];
+    }
 
-        return dp[n];
+    public int numDecodings(String s) {
+        int n = s.length();
+        return bottomUp1(s, n);
     }
 }

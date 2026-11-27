@@ -1,26 +1,4 @@
 class Solution {
-    int[][] t;
-
-    private int solve(int n, int budget, int minPrice, int[][] items, int[] copies) {
-        if (n == 0) {
-            return budget / minPrice;
-        }
-
-        if (t[n][budget] != -1)
-            return t[n][budget];
-
-        int take = 0;
-        int price = items[n - 1][1];
-
-        if (price <= budget) {
-            take = 1 + copies[n - 1] + solve(n - 1, budget - price, minPrice, items, copies);
-        }
-
-        int skip = solve(n - 1, budget, minPrice, items, copies);
-
-        return t[n][budget] = Math.max(take, skip);
-    }
-
     public int maximumSaleItems(int[][] items, int budget) {
         int n = items.length;
 
@@ -41,10 +19,27 @@ class Solution {
             copies[i] = copy;
         }
 
-        t = new int[n + 1][budget + 1];
-        for (int[] row : t)
-            Arrays.fill(row, -1);
+        int[][] t = new int[n + 1][budget + 1];
 
-        return solve(n, budget, minPrice, items, copies);
+        // Base case: no item types left, spend leftover on the cheapest item
+        // n = 0
+        for (int b = 0; b <= budget; b++)
+            t[0][b] = b / minPrice;
+
+        for (int i = 1; i <= n; i++) {
+            for (int b = 0; b <= budget; b++) {
+                int price = items[i - 1][1];
+                int take = 0;
+
+                if (price <= b)
+                    take = 1 + copies[i - 1] + t[i - 1][b - price];
+
+                int skip = t[i - 1][b];
+
+                t[i][b] = Math.max(take, skip);
+            }
+        }
+
+        return t[n][budget];
     }
 }
